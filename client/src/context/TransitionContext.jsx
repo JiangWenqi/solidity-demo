@@ -19,25 +19,38 @@ const createEthereumContract = () => {
 }
 
 export const TransactionProvider = ({ children }) => {
+
     const [currentAccount, setCurrentAccount] = useState("");
+    const [formData, setFormData] = useState({ addressTo: "", amount: 0.0, keyword: "", message: "" });
 
     /**
-     * Check if the wallet is connected
+     * handle transaction form data
+     */
+    const handleChange = (e, name) => {
+        setFormData((prevState) => ({ ...prevState, [name]: e.target.value }));
+    }
+
+    /**
+     * Check if the wallet is connected, if connected, set the current account
      */
     const initCurrentAccount = async () => {
-        if (!ethereum) {
-            return alert('Please install the MetaMask');
-        }
-        const accounts = await ethereum.request({ method: 'eth_accounts' });
-        if (accounts.length) {
-            setCurrentAccount(accounts[0]);
-        } else {
-            console.error('No accounts found, need to connect wallet');
+        try {
+            if (!ethereum) {
+                return alert('Please install the MetaMask');
+            }
+            const accounts = await ethereum.request({ method: 'eth_accounts' });
+            if (accounts.length) {
+                setCurrentAccount(accounts[0]);
+            } else {
+                console.warn('No accounts found, need to connect wallet firstly');
+            }
+        } catch (error) {
+            console.error(error);
         }
     }
 
     /**
-     * load the account into account context
+     * connect to the MetaMask, and add the first account to the current account
      */
     const connectWallet = async () => {
         try {
@@ -49,11 +62,17 @@ export const TransactionProvider = ({ children }) => {
                 setCurrentAccount(accounts[0]);
                 console.log("Current Account is Connected: %o", currentAccount);
             } else {
-                console.error("No account found.");
+                console.warn("No account found.");
             }
         } catch (error) {
-            console.error(error);
+            throw new Error(error);
         }
+    }
+
+
+    const sendTransaction = async () => {
+        const { addressTo, amount, keyword, message } = formData;
+        console.log("Sending Transaction...%o", addressTo);
     }
 
     useEffect(() => {
@@ -63,7 +82,10 @@ export const TransactionProvider = ({ children }) => {
     return (
         < TransactionContext.Provider value={{
             currentAccount,
-            connectWallet
+            connectWallet,
+            formData,
+            handleChange,
+            sendTransaction
         }}>
             {children}
         </TransactionContext.Provider >
