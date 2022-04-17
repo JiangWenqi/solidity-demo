@@ -2,7 +2,8 @@ import React, { useContext } from "react";
 import { AiFillPlayCircle } from "react-icons/ai";
 import { SiEthereum } from "react-icons/si";
 import { BsInfoCircle } from "react-icons/bs";
-import { TransactionContext } from "../context/TransitionContext";
+import { TransactionContext } from "../context/TransactionContext";
+import { shortenAddress } from "../utils/shortenAddress";
 import { Loader } from ".";
 
 
@@ -45,10 +46,7 @@ const Welcome = () => {
                     Explore the crypto world. Buy and sell cryptocurrencies easily on {platform}.
                 </p>
 
-                {currentAccount ?
-                    <div className="text-left mt-5 text-white font-light md:w-9/12 w-11/12 text-base">
-                        Current Account:<p className="text-white text-base font-semibold">{currentAccount}</p>
-                    </div> :
+                {!currentAccount &&
                     <button type="button" onClick={connectWallet} className="flex flex-row justify-center items-center my-5 bg-[#2952e3] p-3 rounded-full cursor-pointer hover:bg-[#2546bd]">
                         <AiFillPlayCircle className="text-white mr-2" />
                         <p className="text-white text-base font-semibold">
@@ -85,7 +83,7 @@ const Welcome = () => {
                         </div>
                         <div>
                             <p className="text-white font-light text-sm">
-                                Address
+                                {shortenAddress(currentAccount)}
                             </p>
                             <p className="text-white font-semibold text-lg mt-1">
                                 Ethereum
@@ -102,7 +100,7 @@ const Welcome = () => {
                     {isLoading ?
                         <Loader /> :
                         <button type="button" onClick={handleSubmit} className="text-white w-full mt-2 border-[1px] p-2 border-[#3d4f7c] hover:bg-[#3d4f7c] rounded-full cursor-pointer">
-                            Send now
+                            Send Now
                         </button>
                     }
                 </div>

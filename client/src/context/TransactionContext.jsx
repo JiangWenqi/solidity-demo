@@ -39,6 +39,7 @@ export const TransactionProvider = ({ children }) => {
             const accounts = await ethereum.request({ method: 'eth_accounts' });
             if (accounts.length) {
                 setCurrentAccount(accounts[0]);
+                loadTransactions();
             } else {
                 console.warn('No accounts found, need to connect wallet firstly');
             }
@@ -95,14 +96,34 @@ export const TransactionProvider = ({ children }) => {
             setIsLoading(false);
             const transactionsCount = await transactionContract.getTransactionCount();
             setTransactionCount(transactionsCount.toNumber());
-            // window.location.reload();
+            window.location.reload();
 
         } catch (error) {
             throw new Error(error);
         }
+    }
 
 
-
+    const loadTransactions = async () => {
+        try {
+            if (!ethereum) return alert("Please install MetaMask.");
+            const transactionContract = createEthereumContract();
+            const availableTransactions = await transactionContract.getAllTransactions();
+            const structuredTransactions = availableTransactions.map((transaction) => ({
+                addressTo: transaction.receiver,
+                addressFrom: transaction.sender,
+                timestamp: new Date(transaction.timestamp.toNumber() * 1000).toLocaleString(),
+                message: transaction.message,
+                keyword: transaction.keyword,
+                amount: parseInt(transaction.amount._hex) / (10 ** 18)
+            }));
+            setTransactions(structuredTransactions);
+            const currentTransactionCount = await transactionContract.getTransactionCount();
+            window.localStorage.setItem("transactionCount", currentTransactionCount);
+            console.log("load %d transactions", currentTransactionCount);
+        } catch (error) {
+            throw new Error(error);
+        }
     }
 
     useEffect(() => {
@@ -118,6 +139,7 @@ export const TransactionProvider = ({ children }) => {
             sendTransaction,
             isLoading,
             transactionCount,
+            transactions
         }}>
             {children}
         </TransactionContext.Provider >
