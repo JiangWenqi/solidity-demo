@@ -48,12 +48,8 @@ const Welcome = () => {
                 {currentAccount ?
                     <div className="text-left mt-5 text-white font-light md:w-9/12 w-11/12 text-base">
                         Current Account:<p className="text-white text-base font-semibold">{currentAccount}</p>
-                    </div>
-                    : <button
-                        type="button"
-                        onClick={connectWallet}
-                        className="flex flex-row justify-center items-center my-5 bg-[#2952e3] p-3 rounded-full cursor-pointer hover:bg-[#2546bd]"
-                    >
+                    </div> :
+                    <button type="button" onClick={connectWallet} className="flex flex-row justify-center items-center my-5 bg-[#2952e3] p-3 rounded-full cursor-pointer hover:bg-[#2546bd]">
                         <AiFillPlayCircle className="text-white mr-2" />
                         <p className="text-white text-base font-semibold">
                             Connect Wallet
@@ -78,7 +74,6 @@ const Welcome = () => {
                 </div>
 
             </div>
-
             <div className="flex flex-col flex-1 items-center justify-start w-full mf:mt-0 mt-10">
                 <div className="p-3 flex justify-end items-start flex-col rounded-xl h-40 sm:w-72 w-full my-5 eth-card .white-glassmorphism ">
                     <div className="flex justify-between flex-col w-full h-full">
@@ -97,7 +92,6 @@ const Welcome = () => {
                             </p>
                         </div>
                     </div>
-
                 </div>
                 <div className="p-5 sm:w-96 w-full flex flex-col justify-start items-center blue-glassmorphism">
                     <Input placeholder="Address To" name="addressTo" type="text" handleChange={handleChange} />
@@ -105,22 +99,19 @@ const Welcome = () => {
                     <Input placeholder="Keyword (Gift)" name="keyword" type="text" handleChange={handleChange} />
                     <Input placeholder="Enter Message" name="message" type="text" handleChange={handleChange} />
                     <div className="h-[1px] w-full bg-gray-400 my-2" />
-
-                    {isLoading
-                        ? <Loader />
-                        : (
-                            <button
-                                type="button"
-                                onClick={handleSubmit}
-                                className="text-white w-full mt-2 border-[1px] p-2 border-[#3d4f7c] hover:bg-[#3d4f7c] rounded-full cursor-pointer"
-                            >
-                                Send now
-                            </button>
-                        )}
+                    {isLoading ?
+                        <Loader /> :
+                        <button type="button" onClick={handleSubmit} className="text-white w-full mt-2 border-[1px] p-2 border-[#3d4f7c] hover:bg-[#3d4f7c] rounded-full cursor-pointer">
+                            Send now
+                        </button>
+                    }
                 </div>
             </div>
 
-        </div>
+
+
+        </div >
+
     );
 
 }
