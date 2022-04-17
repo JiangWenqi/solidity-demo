@@ -6,11 +6,10 @@ export default function App() {
       <div className="gradient-bg-welcome">
         <NavBar />
         <Welcome />
-
       </div>
-      <Services />
+      {/* <Services />
       <Transactions />
-      <Footer />
+      <Footer /> */}
     </h1>
   )
 }
