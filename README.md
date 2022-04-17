@@ -87,5 +87,12 @@ And you can check your balance in MetaMask, it may subtract the gas fee.
    ```
 
 
+# Deploy to Server
+```bash
+cd client
+npm run build
+```
+copy `dist` to your host server
+
 # References
 [JavaScript Mastery](https://www.youtube.com/watch?v=Wn_Kb3MR_cU)
