@@ -2,7 +2,7 @@ import './App.css'
 import { Footer, NavBar, Services, Transactions, Welcome } from './components'
 export default function App() {
   return (
-    <h1 className="min-h-screen">
+    <div className="min-h-screen">
       <div className="gradient-bg-welcome">
         <NavBar />
         <Welcome />
@@ -10,6 +10,6 @@ export default function App() {
       <Services />
       <Transactions />
       <Footer />
-    </h1>
+    </div>
   )
 }
