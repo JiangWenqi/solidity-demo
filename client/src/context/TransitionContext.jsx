@@ -6,22 +6,20 @@ export const TransactionContext = React.createContext();
 const { ethereum } = window;
 
 const createEthereumContract = () => {
-    const provider = new ethers.provider.Web3Provider(ethereum);
+    const provider = new ethers.providers.Web3Provider(ethereum);
     const signer = provider.getSigner();
     const transactionContract = new ethers.Contract(contractAddress, contractABI, signer);
-
-    console.log({
-        provider,
-        signer,
-        transactionContract
-    });
     return transactionContract;
 }
 
 export const TransactionProvider = ({ children }) => {
 
     const [currentAccount, setCurrentAccount] = useState("");
-    const [formData, setFormData] = useState({ addressTo: "", amount: 0.0, keyword: "", message: "" });
+    const [formData, setFormData] = useState({ addressTo: "", amount: "", keyword: "", message: "" });
+    const [isLoading, setIsLoading] = useState(false);
+    const [transactionCount, setTransactionCount] = useState(localStorage.getItem("transactionCount") || 0);
+    const [transactions, setTransactions] = useState([]);
+
 
     /**
      * handle transaction form data
@@ -41,6 +39,7 @@ export const TransactionProvider = ({ children }) => {
             const accounts = await ethereum.request({ method: 'eth_accounts' });
             if (accounts.length) {
                 setCurrentAccount(accounts[0]);
+                console.log("currentAccount: ", currentAccount);
             } else {
                 console.warn('No accounts found, need to connect wallet firstly');
             }
@@ -71,8 +70,41 @@ export const TransactionProvider = ({ children }) => {
 
 
     const sendTransaction = async () => {
-        const { addressTo, amount, keyword, message } = formData;
-        console.log("Sending Transaction...%o", addressTo);
+        try {
+            const { addressTo, amount, keyword, message } = formData;
+            console.log("Sending Transaction Information: %o", formData);
+
+            const transactionContract = createEthereumContract();
+            const parsedAmount = ethers.utils.parseEther(amount);
+
+            await ethereum.request({
+                method: 'eth_sendTransaction',
+                params: [{
+                    from: currentAccount,
+                    to: addressTo,
+                    gas: "0x5208",// 21000
+                    value: parsedAmount._hex,
+                }],
+            });
+
+            const transactionHash = await transactionContract.addToBlockchain(addressTo, parsedAmount, message, keyword);
+
+            setIsLoading(true);
+            console.log(`Loading - ${transactionHash.hash}`);
+            await transactionHash.wait();
+            console.log(`Success - ${transactionHash.hash}`);
+            setIsLoading(false);
+
+            const transactionsCount = await transactionContract.getTransactionCount();
+            setTransactionCount(transactionsCount.toNumber());
+            window.location.reload();
+
+        } catch (error) {
+            throw new Error(error);
+        }
+
+
+
     }
 
     useEffect(() => {
@@ -85,7 +117,9 @@ export const TransactionProvider = ({ children }) => {
             connectWallet,
             formData,
             handleChange,
-            sendTransaction
+            sendTransaction,
+            isLoading,
+            transactionCount,
         }}>
             {children}
         </TransactionContext.Provider >
